@@ -15,11 +15,15 @@ product_router = APIRouter(
 
 @product_router.get("/")
 async def get_products():
+    """List all products stores on dummy database"""
+
     return responses.get_success_response("Produk berhasil ditampilkan", product_data)
 
 
 @product_router.get("/{id}", responses=responses_param["get_by_id"])
 async def get_product_by_id(id: str):
+    """Obtain certain product stores on dummy database based on product ID"""
+
     for item in product_data:
         if item["id"] == id:
             return responses.get_success_response("Produk berhasil ditampilkan", item)
@@ -29,6 +33,8 @@ async def get_product_by_id(id: str):
 
 @product_router.post("/", responses=responses_param["create"])
 async def add_products(request: ProductAddModel):
+    """Create new collection of product data and store into dummy database"""
+
     product_to_add = {
         "id": str(uuid4()),
 
@@ -42,6 +48,8 @@ async def add_products(request: ProductAddModel):
 
 @product_router.put("/{id}", responses=responses_param["update"])
 async def update_product(id: str, request: ProductUpdateModel):
+    """Update certain product data based on product ID with the new data properties"""
+
     product_to_update = request
 
     for item_index, item in enumerate(product_data):
@@ -60,6 +68,8 @@ async def update_product(id: str, request: ProductUpdateModel):
 
 @product_router.delete("/{id}", responses=responses_param["delete"])
 async def delete_product(id: str):
+    """Delete certain product data based on product ID"""
+
     for item_index, item in enumerate(product_data):
         if item["id"] == id:
             del product_data[item_index]

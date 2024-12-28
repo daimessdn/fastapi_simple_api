@@ -26,6 +26,8 @@ async def exception_handler(request: Request, exc: Response):
 
 @app.get("/", tags=["Welcome"])
 async def hello_world():
+    """Starter API endpoint"""
+
     return {"msg": "hello, world!"}
 
 app.include_router(v1_router)
