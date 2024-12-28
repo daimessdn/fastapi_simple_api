@@ -1,7 +1,7 @@
 from fastapi import status
 
 
-class Response:
+class Response(Exception):
     def __init__(self, success, status_code, message, data=None):
         self.success = success
         self.status_code = status_code
@@ -11,10 +11,16 @@ class Response:
             self.data = data
 
 
+# success responses
 def get_success_response(message, data=None):
     return Response(True, status.HTTP_200_OK, message, data)
 
 
+def get_success_created_response(message, data=None):
+    return Response(True, status.HTTP_201_CREATED, message, data)
+
+
+# error responses
 def get_error_bad_request_response(message):
     return Response(False, status.HTTP_400_BAD_REQUEST, message, None)
 
