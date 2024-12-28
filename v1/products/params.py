@@ -1,4 +1,4 @@
-from products.schemas import ProductSuccessResponseModel, ProductErrorResponseModel
+from v1.products.schemas import ProductSuccessResponseModel, ProductErrorResponseModel
 
 responses_param = {
     "create": {

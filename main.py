@@ -1,10 +1,15 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from products.routes import product_router
 from helpers.responses.responses import Response
 
-app = FastAPI()
+from v1.routes import v1_router
+
+app = FastAPI(
+    version="1.0",
+    title="FastAPI Simple API",
+    description="A simple API using FastAPI",
+)
 
 
 @app.exception_handler(Response)
@@ -23,4 +28,4 @@ async def exception_handler(request: Request, exc: Response):
 async def hello_world():
     return {"msg": "hello, world!"}
 
-app.include_router(product_router)
+app.include_router(v1_router)

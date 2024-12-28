@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from uuid import uuid4
 
-from products.schemas import ProductAddModel, ProductUpdateModel
-from products.params import responses_param
+from v1.products.schemas import ProductAddModel, ProductUpdateModel
+from v1.products.params import responses_param
 from data.products import product_data
 
 from helpers.responses import responses
