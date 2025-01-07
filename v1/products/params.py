@@ -1,6 +1,12 @@
 from v1.products.schemas import ProductSuccessResponseModel, ProductErrorResponseModel
 
 responses_param = {
+    "get_all": {
+        200: {
+            "description": "Success Response",
+            "model": ProductSuccessResponseModel,
+        },
+    },
     "create": {
         200: {
             "description": "Success Response",

@@ -23,7 +23,7 @@ product_router = APIRouter(
 product_service = ProductService()
 
 
-@product_router.get("/")
+@product_router.get("/", responses=responses_param["get_all"])
 async def get_products(session: AsyncSession = Depends(get_session)):
     """List all products stored on database"""
     products = await product_service.get_all_products(session)
