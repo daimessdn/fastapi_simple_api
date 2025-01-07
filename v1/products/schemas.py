@@ -1,21 +1,25 @@
 from pydantic import BaseModel
-from uuid import uuid4
 
+from uuid import uuid4, UUID
 from typing import Union, List
+from datetime import datetime
 
 from helpers.responses.schemas import SuccessResponseModel, ErrorResponseModel
 
 
 class Product(BaseModel):
-    id: uuid4
+    id: UUID
     name: str
     description: str
     price: float
     stock: int
 
+    created_at: datetime
+    updated_at: datetime
+
 
 # Product request models
-class ProductAddModel(BaseModel):
+class ProductCreateModel(BaseModel):
     name: str
     description: str
     price: float
@@ -31,12 +35,15 @@ class ProductUpdateModel(BaseModel):
 
 # Product response models
 class SingleProductResponseModel(Product):
-    id: str
+    id: UUID
 
     name: str
     description: str
     price: float
     stock: int
+
+    created_at: datetime
+    updated_at: datetime
 
 
 class ProductSuccessResponseModel(SuccessResponseModel):

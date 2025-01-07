@@ -7,6 +7,8 @@ class Response(Exception):
         self.status_code = status_code
         self.message = message
 
+        print(data)
+
         if data is not None:
             self.data = data
 

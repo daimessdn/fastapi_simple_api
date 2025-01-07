@@ -1,79 +1,74 @@
-from fastapi import APIRouter
-from uuid import uuid4
+from fastapi import APIRouter, Depends
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from v1.products.schemas import ProductAddModel, ProductUpdateModel
+from v1.products.schemas import ProductCreateModel, ProductUpdateModel
 from v1.products.params import responses_param
-from data.products import product_data
+from v1.products.services import ProductService
 
 from helpers.responses import responses
+
+from db.main import get_session
+
+import logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 
 product_router = APIRouter(
     prefix="/products",
     tags=["Products"],
 )
 
+product_service = ProductService()
+
 
 @product_router.get("/")
-async def get_products():
-    """List all products stores on dummy database"""
-
-    return responses.get_success_response("Produk berhasil ditampilkan", product_data)
+async def get_products(session: AsyncSession = Depends(get_session)):
+    """List all products stored on database"""
+    products = await product_service.get_all_products(session)
+    return responses.get_success_response("Produk berhasil ditampilkan", products)
 
 
 @product_router.get("/{id}", responses=responses_param["get_by_id"])
-async def get_product_by_id(id: str):
-    """Obtain certain product stores on dummy database based on product ID"""
+async def get_product_by_id(id: str, session: AsyncSession = Depends(get_session)):
+    """Obtain certain product stored on database based on product ID"""
+    product = await product_service.get_product_by_id(id, session)
 
-    for item in product_data:
-        if item["id"] == id:
-            return responses.get_success_response("Produk berhasil ditampilkan", item)
+    if product:
+        return responses.get_success_response("Produk berhasil ditampilkan", product)
 
     raise responses.get_error_not_found_response("Produk tidak ditemukan")
 
 
 @product_router.post("/", responses=responses_param["create"])
-async def add_products(request: ProductAddModel):
-    """Create new collection of product data and store into dummy database"""
+async def add_products(request: ProductCreateModel, session: AsyncSession = Depends(get_session)):
+    """Create new collection of product data and store into database"""
 
-    product_to_add = {
-        "id": str(uuid4()),
+    new_product = await product_service.create_product(request, session)
 
-        **request.model_dump()
-    }
-
-    product_data.append(product_to_add)
-
-    return responses.get_success_created_response("Berhasil menambahkan produk", product_to_add)
+    return responses.get_success_created_response("Berhasil menambahkan produk", new_product)
 
 
 @product_router.put("/{id}", responses=responses_param["update"])
-async def update_product(id: str, request: ProductUpdateModel):
+async def update_product(id: str, request: ProductUpdateModel, session: AsyncSession = Depends(get_session)):
     """Update certain product data based on product ID with the new data properties"""
 
-    product_to_update = request
+    updated_product = await product_service.update_product(id, request, session)
 
-    for item_index, item in enumerate(product_data):
-        if item["id"] == id:
-            item = {
-                "id": id,
-
-                **product_to_update.model_dump()
-            }
-            product_data[item_index] = item
-
-            return responses.get_success_response("Produk berhasil diperbarui", item)
+    if updated_product:
+        return responses.get_success_response("Produk berhasil diperbarui", updated_product)
 
     raise responses.get_error_not_found_response("Produk tidak ditemukan")
 
 
 @product_router.delete("/{id}", responses=responses_param["delete"])
-async def delete_product(id: str):
+async def delete_product(id: str, session: AsyncSession = Depends(get_session)):
     """Delete certain product data based on product ID"""
 
-    for item_index, item in enumerate(product_data):
-        if item["id"] == id:
-            del product_data[item_index]
+    deleted_product = await product_service.delete_product(id, session)
 
-            return responses.get_success_response("Produk berhasil dihapus", None)
+    if deleted_product:
+        return responses.get_success_response("Produk berhasil dihapus", None)
 
     raise responses.get_error_not_found_response("Produk tidak ditemukan")

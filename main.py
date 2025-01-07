@@ -1,14 +1,28 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from contextlib import asynccontextmanager
+
+from db.main import init_db
+
 from helpers.responses.responses import Response
 
 from v1.routes import v1_router
+
+
+@asynccontextmanager
+async def life_span(app: FastAPI):
+    print("server is starting...")
+    await init_db()
+    yield
+    print("server has been stopped...")
+
 
 app = FastAPI(
     version="1.0",
     title="FastAPI Simple API",
     description="A simple API using FastAPI",
+    lifespan=life_span
 )
 
 
